@@ -1,0 +1,216 @@
+This file is going to act as a README.txt file for the SimpleDapp
+It contains instructions to *understand* the DApp and its fundamental concepts and get it running.
+
+[Note: An assumption is that you have a metamask account or atleast any other wallet software with an account in it. Not necessary to have funds from the start, but preferable
+Also, free faucets for testnet eth can be used at any time. So good luck.]
+
+
+The simple target of this application
+is that it will deploy a contract with Funds locked till 1 year
+
+First
+create a directory
+<directory_name>
+mkdir SimpleDapp
+
+gitclone the files from the Github repository into this new directory
+	using git clone https://github.com/ishansathe/SimpleDapp.git
+Or, you could simply download an extract the files, your choice.
+
+Or, you could simply copy paste some the Lock.sol file and hardhat.config.js file (Main files that will be changed)
+By deleting and replacing the files as they would be created ahead.
+
+
+then give command 
+npm init
+	This will create package.json file
+	Press enter on all prompts (for the default values)
+
+npm install --save-dev hardhat
+	This will install the node modules and package-lock.json
+
+You have to then install the 
+@nomicfoundation/hardhat-toolbox
+Usually, after the previous command, they will give you the exact command (along with version number) which you have to then enter
+	This will install the necessary updates to package.json file
+
+Now, we create a hardhat based project using
+npx install hardhat
+	(Select the javascript project)
+	Then, default => contracts (Lock.sol), scripts (deploy.js), test (Lock.js) and a hardhat.config.js files will be created
+	(along with the files mentioned in brackets beside them)
+		Lock.sol ->  Solidity Smart Contract
+
+		deploy.js ->  Javascript file that contains code to deploy the smart contract by setting certain parameters as 
+				required and specified in the smart contract. Also makes use of hre (Hardhat Runtime Environment)
+				and the internal library ethers and its various functions.
+				The goal of this file is to successfully deploy the contract in async mode (such that no other tasks or
+				functions may override it). 
+				Once deployed it displays the success message (as would be set in the deploy.js file)
+				In case of failures/errors, it also contains a pattern to successfully catch and handle errors
+				(simple put, it's catching the error, displaying on screen and exiting, using javascript hooks.)
+
+		Lock.js ->  This file contains all the testing to make sure that the contract which was deployed with the initial 
+				conditions, satisifies the desired properties of the contract. Simply put, the contract must not be
+				intitiated with any malicious patterns or workarounds that would circumvent the security and certainty 
+				of the contract. (Hence, it ususally involves a lot of tests, you can look into the file to see the 
+				default tests, you may also choose to add or remove tests cases)
+		
+		hardhat.config.js -> This file contains export information (by default it is written to be compiling using solidity compiler)
+					However, we have changed it to include networks as well. Configured the file to connect to
+					goerli as well as the default hardhat network (required, in case goerli fails)
+
+Disclaimer:
+	Getting Goerli eth requires real money now. so if you don't already have it, I would recommend shifting to Sepolia.
+When shifting to Sepolia testnet you would want to
+change the 'hardhat.config.js' file. The only change to be made here is to rewrite 'goerli' as 'sepolia'
+
+
+Inside the hardhat.config.js file
+you would see the following line of code:
+	require('dotenv').config();
+this is actually referring to the '.env' file that we are going to create!
+
+
+Now, to create a dotenv file
+	If you are using VSCode you could click on the 'New File' button and type in .env
+	or you could go to the file explorer and do the task manually.
+	Inside the '.env' file
+	Add these 2 variables
+		API_URL_KEY = "<provider url Key here>"
+		PRIVATE_KEY = '<metamask private key here>'
+
+Remember how we spoke about wallet softwares in the beginning?
+Go to your software and get your private key
+Metamask was used by me, so open the extension, go to the 3 dots on your account number, click on account details
+CLick on 'extract private key'
+enter the password and voila, you will find your private key for that account
+Note that the private key is not meant to be shared. Keep it as a practice to store your keys safely, even if they do not store any valuable funds.
+
+Now, you copy paste that private key in the space given above.
+
+Next, you have the API URL KEY
+This is the API URL Key of the provider that we will be using.
+A provider is like a node that returns to us the information on the blockchain.
+To get your own provider,
+go to Quicknode.com
+Register yourself, Click on 'Create an endpoint' -> Select network as 'Ethereum Sepolia' (or Goerli, if you have the eth) 
+Keep the rest of the settings as default. Give any name to the endpoint as you like
+Now, on your dashboard, Click on the endpoint that your just created, you will see that its status is 'Ready'
+Under the 'Get Started' tab
+You will see a HTTP Provider box
+Copy the URL under that box.
+This URL is to be pasted onto the API_URL_KEY space that we created earlier.
+
+Now we are ready.
+
+
+Now, you can test your application using
+npx hardhat compile
+	This will now create artifacts and cache files (which will be used for execution)
+	Note that the testing part only works inside the hardhat network (by default code)
+	So, keep the network to default if you want to test it
+	Otherwise, set it to goerli (or Sepolia)
+
+You can now deploy the smart contract using
+npx hardhat run scripts/deploy.js --network goerli 
+	This may take some time as you are interacting with a real ethereum goerli testnet (a real blockchain)
+	You will be returned with (by default) the locked amount, timestamp and the transaction address
+	The transaction address can help you track the transaction on the goerli network
+	go to https://goerli.etherscan.io/ and copy paste the transaction address
+	You will find the Transaction information as well as the contract address over there!
+	With this, you can verify the validity of your transactions and get some knowledge on the workings of the testnet (test blockchain
+	network) too! So do take a look at it.
+
+
+Now, we create the front end
+run the command
+npx create-react-app frontend
+			(or any name you want to give the folder)
+[If you get an error
+npm ERR! enoent ENOENT: no such file or directory, lstat 'C:\Users\ishan\AppData\Roaming\npm'
+npm ERR! enoent This is related to npm not being able to find a file.
+
+then run 
+npm install npm -g
+
+this will install the file npm in all the folders and add it to the path variable instead of just the local directory that you are in
+(such that no further errors of this type will occur)]
+
+the create-react-app command may also ask you to further download some packages (like the create-react-app@5.0.1)
+Press enter to say yes.
+
+It will then further install the other required packages for the 'react' app
+Take your time.
+
+Next, install run the following commands as well:
+		npm install web3
+			Adds 69 packages
+		npm install ethers@5.0.0
+			Adds some packages
+
+
+Now, make the changes to your App.js and App.css
+by copy pasting the code from the repository (or you can keep it as is for now.)
+
+In order to make the front end interact with the smart contract, we will need 3 main things
+1.) contract address
+2.) ABI
+3.) provider (in our case, quicknode)
+
+1.)For Contract Address: 
+[Info: 
+	This is where the contract is on the blockchain. In order to find all the variables associated with the contract, 
+	The provider (we will see further) will need to know the location of the contract on our testnet (or much, any) blockchain.
+	The address is assigned to the contract immediately when it is deployed onto the blockchain. Since it is a blockchain, these locations are fixed and can be reused as well!
+]
+
+	Go to the App.js
+	Approximately on line 24, you will see the previous contract address, change it to the contract address we received after running:
+			npx hardhat run scripts/deploy.js --network goerli
+
+
+2.) For the ABI (Abstract Binary Interface)
+[Info:
+	An ABI File is the one that contains the lower level version of the code which is understandable by the machine.
+	It also helps in maintaining the definitions of all the functions and what they do
+	You could say that this part is the key to interoperability between the smart contract and frontend!
+]
+
+	Now, we create an ABI file in the frontend directory named -> 'ContractABI.json'
+
+	Next,
+	go to the artifacts directory in SimpleDapp
+	then into contracts\Lock.sol
+	and open the Lock.json
+
+	Copy all of its contents into the ContractABI.json file
+	Since in the App.js we have already mentioned and imported ContractABI.json file, that's all we have to do.
+
+
+
+3.) For the Provider
+[Info:
+	The provider is like an API that returns information from the blockchain.
+	Once we have the smart contract address and the target testnet, we will be able to extract information regarding the contract from the blockchain (testnet, or even a real one).
+	This information will be passed onto the frontend,
+	which would also be having access to the ABI of the smart contract so that it will be able to perform operations on the contract.
+	These operations are as have been designed by the creator of the smart contract.
+]
+
+	Recall the QuickNode endpoint that we created earlier? Also it's URL that we added to the API_URL_KEY inside our '.env' file?
+	Head to the '.env' file, copy the URL. (or, you could reopen the tab or your QuickNode account, follow the same steps as before and get the URL from there as well.)
+	
+	Now, paste it the URL inside the 'async loadWeb3()' function right in the place where an existing URL might be.
+	The Line of Code would appear something like:
+			var web3 = new Web3( Web3.givenProvider || "<Enter the API_URL_KEY here>")
+	
+	(You may also remove the 'Web3.givenProvider ||' part since it is also not being used.)
+	The provider is being passed to the next place inside the 'Load Blockchain Data function' which will further load the blockchain data 
+	(Details regarding the same can be found in the code itself.)
+		
+
+
+Finally, run npm start!
+
+This should get the code running!
